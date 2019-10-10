@@ -15,11 +15,12 @@ void ProductCodesSorter::SortProductCodesFromFile(const char * inputFileName, co
 		return;
 	}
 
+	
 	std::ifstream inputFileStream(inputFileName);
 
 	if (inputFileStream.fail())
 	{
-		std::cout << "ERROR: Failed to open input file with name '" << inputFileName << "'. Please provide a valid input file name." << std::endl;
+		std::cout << "ERROR: Failed to open input file with name '" << inputFileName << "'. Please check if file exists and the name is correct." << std::endl;
 		return;
 	}
 
