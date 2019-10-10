@@ -8,7 +8,6 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_set>
-//#include <map>
 #include <cwctype>
 #include <clocale>
 
@@ -18,7 +17,7 @@ private:
 	ProductCodesSorter() = default;
 	
 	using ProductCodeList = std::vector<std::unique_ptr<ProductCode>>;
-	static void BuildProductCodeListFromFile(std::wifstream& inputFileStream, std::wostream& outputFileStream);// , ProductCodeList& productCodeList, size_t& distinctProductCodeCount);
+	static void BuildProductCodeListFromFile(std::wifstream& inputFileStream, ProductCodeList& productCodeList);
 	static void SortProductCodeList();
 
 public:
