@@ -15,8 +15,8 @@ void ProductCodesSorter::SortProductCodesFromFile(const char * inputFileName, co
 		return;
 	}
 
-	
-	std::ifstream inputFileStream(inputFileName);
+	// Read file in UTF-8
+	std::wifstream inputFileStream(inputFileName);
 
 	if (inputFileStream.fail())
 	{
@@ -24,11 +24,24 @@ void ProductCodesSorter::SortProductCodesFromFile(const char * inputFileName, co
 		return;
 	}
 
-	std::ofstream outputFileStream(outputFileName);
+	inputFileStream.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t, 0x10ffff, std::consume_header>));
+	std::wstringstream wss;
+	wss << inputFileStream.rdbuf();
+
+	// Write file in UTF-8
+	std::wofstream outputFileStream;
+	outputFileStream.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t, 0x10ffff, std::generate_header>));
+	outputFileStream.open(outputFileName, std::ios_base::binary | std::ios_base::out);
 
 	if (outputFileStream.fail())
 	{
 		std::cout << "ERROR: Failed to open output file with name '" << outputFileName << "'. Please provide a valid output file name." << std::endl;
 		return;
+	}
+
+	for (wchar_t wch : wss.str())
+	{
+		if (!iswdigit(wch))
+			outputFileStream << wch << '\n';
 	}
 }

@@ -3,13 +3,16 @@
 #include "ProductCodeFactory.h"
 #include <fstream>
 #include <iostream>
+#include <locale>
+#include <codecvt>
+#include <sstream>
 
 class ProductCodesSorter
 {
 private:	
 	ProductCodesSorter() = default;
 
-	static void BuildProductCodeList(std::ifstream& inputFileStream);
+	static void BuildProductCodeList(std::wifstream& inputFileStream);
 	static void SortProductCodeList();
 
 public:
