@@ -1,12 +1,6 @@
 #include "../ProductCodeFactory.h"
 
-
-
-ProductCodeFactory::ProductCodeFactory()
+std::unique_ptr<ProductCode> ProductCodeFactory::NewProductCode(const wchar_t * productCodeStr)
 {
-}
-
-
-ProductCodeFactory::~ProductCodeFactory()
-{
+	return std::make_unique<ProductCode>(ProductCode());
 }

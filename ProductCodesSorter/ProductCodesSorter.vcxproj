@@ -117,11 +117,9 @@
   <ItemGroup>
     <ClCompile Include="src\ProductCodesSorter.cpp" />
     <ClCompile Include="src\ProductCodeFactory.cpp" />
-    <ClCompile Include="src\ProductCode.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ProductCode.h" />
     <ClInclude Include="ProductCodeFactory.h" />
     <ClInclude Include="ProductCodesSorter.h" />
   </ItemGroup>
