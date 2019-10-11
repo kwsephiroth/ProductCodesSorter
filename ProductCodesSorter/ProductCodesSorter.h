@@ -17,7 +17,7 @@ private:
 	ProductCodesSorter() = default;
 	
 	using ProductCodeList = std::vector<std::unique_ptr<ProductCode>>;
-	static void BuildProductCodeListFromFile(std::wifstream& inputFileStream, ProductCodeList& productCodeList, std::wofstream& outStream);
+	static void BuildProductCodeListFromFile(std::wifstream& inputFileStream, ProductCodeList& productCodeList, size_t& distinctCodesCount);
 	static void SortProductCodeList(ProductCodeList& productCodeList);
 
 public:

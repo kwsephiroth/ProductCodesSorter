@@ -5,7 +5,7 @@
 struct Block
 {
 	std::wstring m_contents;
-	bool m_isNum;
+	bool m_isNum = false;
 };
 class ProductCode
 {
@@ -18,6 +18,7 @@ private:
 public:
 	ProductCode(std::wstring&& originalStr, std::vector<Block>&& blocks) : m_originalStr(originalStr), m_blocks(blocks) {}
 	const std::vector<Block>& GetBlocks() const { return m_blocks; }
+	const std::wstring& GetOriginalString() const { return m_originalStr; }
 };
 
 /*class ProductCodeFactory
