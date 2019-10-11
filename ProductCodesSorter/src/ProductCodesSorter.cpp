@@ -3,10 +3,11 @@
 
 static bool ComesBefore(const std::unique_ptr<ProductCode>& pc1, const std::unique_ptr<ProductCode>& pc2)
 {
-	auto& pc1Blocks = pc1->GetBlocks();
-	auto& pc2Blocks = pc2->GetBlocks();
-	auto pc1BlockCount = pc1Blocks.size();
-	auto pc2BlockCount = pc2Blocks.size();	
+	std::cout << "here1" << std::endl;
+	auto& pc1Blocks = pc1->GetBlocks(); std::cout << "here2" << std::endl;
+	auto& pc2Blocks = pc2->GetBlocks(); std::cout << "here3" << std::endl;
+	auto pc1BlockCount = pc1Blocks.size(); std::cout << "here4" << std::endl;
+	auto pc2BlockCount = pc2Blocks.size();	std::cout << "here5" << std::endl;
 
 	if (pc1BlockCount <= 0)
 		return false;
@@ -14,26 +15,35 @@ static bool ComesBefore(const std::unique_ptr<ProductCode>& pc1, const std::uniq
 	if (pc2BlockCount <= 0)
 		return true;
 
-	auto maxIterations = std::min(pc1BlockCount, pc2BlockCount);
+	auto maxIterations = std::min(pc1BlockCount, pc2BlockCount); std::cout << "here6" << std::endl;
 
 	for (size_t i = 0; i < maxIterations; ++i)
 	{
+		std::cout << "here7" << std::endl;
 		if (i < pc1BlockCount && i < pc2BlockCount)//Make sure index is in range first
 		{
-			auto& blk1 = pc1Blocks[i]; 
+			std::cout << "here8" << std::endl;
+			auto& blk1 = pc1Blocks[i]; std::cout << "here9" << std::endl;
 			auto& blk2 = pc2Blocks[i];
-
+			std::cout << "here10" << std::endl;
 			if (blk1.m_isNum && blk2.m_isNum)//If block contents are both number strings, 
 											 //convert to numbers then compare
 			{
-				auto num1 = std::stol(blk1.m_contents);
-				auto num2 = std::stol(blk2.m_contents);
-
-				if (num1 == num2)//Check if block contents are equal
+				try
 				{
-					continue;//Continue past equivalent blocks
+					std::wcout << "blk1.m_contents = " << blk1.m_contents << std::endl;
+					auto num1 = std::stol(blk1.m_contents); std::cout << "here11" << std::endl;
+					auto num2 = std::stol(blk2.m_contents); std::cout << "here12" << std::endl;	
+					if (num1 == num2)//Check if block contents are equal
+					{
+						continue;//Continue past equivalent blocks
+					}
+					return (num1 < num2 ? true : false);
 				}
-				return (num1 < num2 ? true : false);
+				catch (std::exception& e)
+				{
+					std::cout << "ERROR: Exception encountered during string to integer conversion: " << e.what() << std::endl;
+				}
 			}
 			else if(blk1.m_isNum && !blk2.m_isNum)
 			{
@@ -61,32 +71,69 @@ static bool ComesBefore(const std::unique_ptr<ProductCode>& pc1, const std::uniq
 	return (pc1BlockCount <= pc2BlockCount ? true : false);
 }
 
-void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFileStream, ProductCodeList& productCodeList)
+void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFileStream, ProductCodeList& productCodeList, std::wofstream& outStream)
 {
 	std::unordered_set<std::wstring> uniqueProductCodes;
-	std::wstring uniqueProductCode;
-	
-	std::setlocale(LC_ALL, "en_US.utf8");
+
+	std::setlocale(LC_ALL, "en_US.utf8");//TODO: Determine if this is correct. it seems to be needed for towupper to work correctly
 	
 	std::wstring line;
+
 	while (std::getline(inputFileStream, line))
-	{
-		for (wchar_t wch : line)
+	{	
+		Block currentBlock;
+		std::vector<Block> currentBlocks;
+		std::wstring currentBlockContents;
+		bool processingNumberBlock = false;
+		std::wstring uniqueProductCode;
+
+		for (wchar_t& wch : line)
 		{
 			if (iswdigit(wch))
 			{
+				if (!processingNumberBlock)
+				{
+					//Start of a number block detected
+					outStream << currentBlockContents << L'\n';
+					currentBlock.m_contents = currentBlockContents;
+					currentBlocks.push_back(currentBlock);
+					currentBlockContents.clear();
+					currentBlock.m_isNum = true;
+					processingNumberBlock = true;
+				}
 				uniqueProductCode.push_back(wch);
+				currentBlockContents.push_back(wch);
 			}
 			else if (iswalpha(wch))
 			{
+				if (processingNumberBlock)
+				{
+					//End of a number block detected
+				    outStream << currentBlockContents << L'\n';
+					currentBlock.m_contents = currentBlockContents;
+					currentBlocks.push_back(currentBlock);
+					currentBlockContents.clear();
+					currentBlock.m_isNum = false;
+					processingNumberBlock = false;
+				}
 				uniqueProductCode.push_back(towupper(wch));
+				currentBlockContents.push_back(towupper(wch));
 			}
 		}				
-
 		uniqueProductCodes.insert(uniqueProductCode);
-		uniqueProductCode.clear();
+		std::unique_ptr<ProductCode> currentProduct(new ProductCode( std::move(line), std::move(currentBlocks)));
+		productCodeList.push_back(std::move(currentProduct));
 	}
 	std::cout << "There are " << uniqueProductCodes.size() << " distinct product codes in the file." << std::endl;
+	std::cout << "There are " << productCodeList.size() << " ProductCode objects in the list." << std::endl;
+}
+
+void ProductCodesSorter::SortProductCodeList(ProductCodeList& productCodeList)
+{
+	if (productCodeList.empty())
+		return;
+
+	std::sort(productCodeList.begin(), productCodeList.end(), ComesBefore);
 }
 
 void ProductCodesSorter::SortProductCodesFromFile(const char * inputFileName, const char * outputFileName)
@@ -126,5 +173,7 @@ void ProductCodesSorter::SortProductCodesFromFile(const char * inputFileName, co
 		return;
 	}
 	
-	BuildProductCodeListFromFile(inputFileStream, outputFileStream);
+	ProductCodeList pcList;
+	BuildProductCodeListFromFile(inputFileStream, pcList, outputFileStream);
+	//SortProductCodeList(pcList);
 }
