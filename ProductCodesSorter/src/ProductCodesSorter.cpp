@@ -84,42 +84,46 @@ void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFile
 		Block currentBlock;
 		std::vector<Block> currentBlocks;
 		std::wstring currentBlockContents;
-		bool processingNumberBlock = false;
 		std::wstring uniqueProductCode;
 
 		for (wchar_t& wch : line)
 		{
 			if (iswdigit(wch))
 			{
-				if (!processingNumberBlock)
+				if (!currentBlockContents.empty() && iswalpha(currentBlockContents.back()))
 				{
-					//Start of a number block detected
 					outStream << currentBlockContents << L'\n';
 					currentBlock.m_contents = currentBlockContents;
+					currentBlock.m_isNum = false;
 					currentBlocks.push_back(currentBlock);
 					currentBlockContents.clear();
-					currentBlock.m_isNum = true;
-					processingNumberBlock = true;
 				}
 				uniqueProductCode.push_back(wch);
 				currentBlockContents.push_back(wch);
 			}
 			else if (iswalpha(wch))
 			{
-				if (processingNumberBlock)
+				if (!currentBlockContents.empty() && iswdigit(currentBlockContents.back()))
 				{
-					//End of a number block detected
-				    outStream << currentBlockContents << L'\n';
+					outStream << currentBlockContents << L'\n';
 					currentBlock.m_contents = currentBlockContents;
+					currentBlock.m_isNum = true;
 					currentBlocks.push_back(currentBlock);
 					currentBlockContents.clear();
-					currentBlock.m_isNum = false;
-					processingNumberBlock = false;
 				}
 				uniqueProductCode.push_back(towupper(wch));
 				currentBlockContents.push_back(towupper(wch));
 			}
-		}				
+		}	
+		if (!currentBlockContents.empty())
+		{
+			outStream << currentBlockContents << L'\n';
+			currentBlock.m_contents = currentBlockContents;
+			currentBlock.m_isNum = iswdigit(currentBlockContents.back());
+			currentBlocks.push_back(currentBlock);
+		}
+
+		std::cout << "Number of blocks: " << currentBlocks.size() << std::endl;
 		uniqueProductCodes.insert(uniqueProductCode);
 		std::unique_ptr<ProductCode> currentProduct(new ProductCode( std::move(line), std::move(currentBlocks)));
 		productCodeList.push_back(std::move(currentProduct));
