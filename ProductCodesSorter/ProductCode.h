@@ -6,11 +6,10 @@ struct Block
 	std::wstring m_contents;
 	bool m_isNum = false;
 };
+
 class ProductCode
 {
 private:
-
-	friend class ProductCodeFactory;
 	std::wstring m_originalStr;
 	std::vector<Block> m_blocks;
 

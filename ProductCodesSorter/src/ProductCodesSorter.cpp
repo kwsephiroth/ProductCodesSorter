@@ -71,7 +71,7 @@ void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFile
 {
 	std::unordered_set<std::wstring> uniqueProductCodes;
 
-	std::setlocale(LC_ALL, "");// , "en_US.utf8");
+	std::setlocale(LC_ALL, "en_US.utf8");
 	
 	std::wstring line;
 
@@ -88,7 +88,6 @@ void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFile
 			{
 				if (!currentBlockContents.empty() && iswalpha(currentBlockContents.back()))
 				{
-					//outStream << currentBlockContents << L'\n';
 					currentBlock.m_contents = currentBlockContents;
 					currentBlock.m_isNum = false;
 					currentBlocks.push_back(currentBlock);
@@ -101,7 +100,6 @@ void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFile
 			{
 				if (!currentBlockContents.empty() && iswdigit(currentBlockContents.back()))
 				{
-					//outStream << currentBlockContents << L'\n';
 					currentBlock.m_contents = currentBlockContents;
 					currentBlock.m_isNum = true;
 					currentBlocks.push_back(currentBlock);
@@ -113,22 +111,17 @@ void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFile
 		}	
 		if (!currentBlockContents.empty())
 		{
-			//outStream << currentBlockContents << L'\n';
 			currentBlock.m_contents = currentBlockContents;
 			currentBlock.m_isNum = iswdigit(currentBlockContents.back());
 			currentBlocks.push_back(currentBlock);
 		}
 
-		//std::cout << "Number of blocks: " << currentBlocks.size() << std::endl;
 		uniqueProductCodes.insert(uniqueProductCode);
 		std::unique_ptr<ProductCode> currentProduct(new ProductCode( std::move(line), std::move(currentBlocks)));
 		productCodeList.push_back(std::move(currentProduct));
 	}
-	//std::cout << "There are " << uniqueProductCodes.size() << " distinct product codes in the file." << std::endl;
+
 	distinctCodesCount = uniqueProductCodes.size();
-	//std::cout << "There are " << productCodeList.size() << " ProductCode objects in the list." << std::endl;
-	//for (auto& p : productCodeList)
-		//outStream << p->GetOriginalString() << L'\n';
 }
 
 void ProductCodesSorter::SortProductCodeList(ProductCodeList& productCodeList)
