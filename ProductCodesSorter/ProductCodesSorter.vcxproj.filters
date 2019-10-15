@@ -18,18 +18,15 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ProductCodeFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ProductCodesSorter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ProductCodeFactory.h">
+    <ClInclude Include="ProductCodesSorter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProductCodesSorter.h">
+    <ClInclude Include="ProductCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

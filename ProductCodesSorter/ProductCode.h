@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <vector>
 
 struct Block
@@ -10,7 +9,7 @@ struct Block
 class ProductCode
 {
 private:
-	
+
 	friend class ProductCodeFactory;
 	std::wstring m_originalStr;
 	std::vector<Block> m_blocks;
@@ -20,12 +19,3 @@ public:
 	const std::vector<Block>& GetBlocks() const { return m_blocks; }
 	const std::wstring& GetOriginalString() const { return m_originalStr; }
 };
-
-/*class ProductCodeFactory
-{
-private:
-	ProductCodeFactory() = default;
-public:
-	static std::unique_ptr<ProductCode> NewProductCode(const wchar_t* productCodeStr);
-};*/
-

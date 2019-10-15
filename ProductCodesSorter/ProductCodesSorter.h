@@ -1,5 +1,5 @@
 #pragma once
-#include "ProductCodeFactory.h"
+#include "ProductCode.h"
 #include <fstream>
 #include <iostream>
 #include <locale>
