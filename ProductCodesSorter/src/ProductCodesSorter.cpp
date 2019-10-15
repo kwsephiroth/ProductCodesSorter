@@ -3,11 +3,10 @@
 
 static bool ComesBefore(const std::unique_ptr<ProductCode>& pc1, const std::unique_ptr<ProductCode>& pc2)
 {
-	//std::cout << "here1" << std::endl;
-	auto& pc1Blocks = pc1->GetBlocks(); //std::cout << "here2" << std::endl;
-	auto& pc2Blocks = pc2->GetBlocks(); //std::cout << "here3" << std::endl;
-	auto pc1BlockCount = pc1Blocks.size();// std::cout << "here4" << std::endl;
-	auto pc2BlockCount = pc2Blocks.size();	//std::cout << "here5" << std::endl;
+	auto& pc1Blocks = pc1->GetBlocks();
+	auto& pc2Blocks = pc2->GetBlocks();
+	auto pc1BlockCount = pc1Blocks.size();
+	auto pc2BlockCount = pc2Blocks.size();
 
 	if (pc1BlockCount <= 0)
 		return false;
@@ -15,30 +14,25 @@ static bool ComesBefore(const std::unique_ptr<ProductCode>& pc1, const std::uniq
 	if (pc2BlockCount <= 0)
 		return true;
 
-	auto maxIterations = std::min(pc1BlockCount, pc2BlockCount); //std::cout << "here6" << std::endl;
+	auto maxIterations = std::min(pc1BlockCount, pc2BlockCount);
 
 	for (size_t i = 0; i < maxIterations; ++i)
 	{
-		//std::cout << "here7" << std::endl;
 		if (i < pc1BlockCount && i < pc2BlockCount)//Make sure index is in range first
 		{
-			//std::cout << "here8" << std::endl;
-			auto& blk1 = pc1Blocks[i]; //std::cout << "here9" << std::endl;
+			auto& blk1 = pc1Blocks[i];
 			auto& blk2 = pc2Blocks[i];
-			//std::cout << "here10" << std::endl;
-			//std::cout << blk1.m_isNum << " " << blk2.m_isNum << std::endl;
+
 			if (blk1.m_isNum && blk2.m_isNum)//If block contents are both number strings, 
 											 //convert to numbers then compare
 			{
 				try
 				{
-					//std::wcout << "blk1.m_contents = " << blk1.m_contents << std::endl;
-					auto num1 = std::stol(blk1.m_contents); //std::cout << "here11" << std::endl;
-					//std::wcout << "blk2.m_contents = " << blk1.m_contents << std::endl;
-					auto num2 = std::stol(blk2.m_contents); //std::cout << "here12" << std::endl;	
+					auto num1 = std::stol(blk1.m_contents);
+					auto num2 = std::stol(blk2.m_contents);
 					if (num1 == num2)//Check if block contents are equal
 					{
-						continue;//Continue past equivalent blocks
+						continue;//Continue passed equivalent blocks
 					}
 					return (num1 < num2 ? true : false);
 				}
@@ -49,25 +43,19 @@ static bool ComesBefore(const std::unique_ptr<ProductCode>& pc1, const std::uniq
 			}
 			else if(blk1.m_isNum && !blk2.m_isNum)
 			{
-				//std::cout << "here13" << std::endl;
 				return true;//Number blocks always come before non-digits
 			}
 			else if(!blk1.m_isNum && blk2.m_isNum)
 			{
-				//std::cout << "here14" << std::endl;
 				return false;
 			}
 			else//Neither block is a number so they both are alphabetic(only letters)
 			{
-				//std::cout << "here14" << std::endl;
 				if (blk1.m_contents == blk2.m_contents)//Check if block contents are equal
 				{
-					//std::cout << "here15" << std::endl;
-					continue;//Continue past equivalent blocks
+					continue;//Continue passed equivalent blocks
 				}
-				//std::cout << "here16" << std::endl;
 				auto retVal = (blk1.m_contents < blk2.m_contents ? true : false);
-				//std::cout << "here17" << std::endl;
 				return retVal;
 			}
 		}
@@ -76,7 +64,6 @@ static bool ComesBefore(const std::unique_ptr<ProductCode>& pc1, const std::uniq
 	//All blocks matched up to the smallest number of blocks,
 	//so, the product code with the smaller number of blocks comes first
 	//Also, if the block counts are equal, order should match order of input file.
-	//std::cout << "here18" << std::endl;
 	return (pc1BlockCount < pc2BlockCount ? true : false);
 }
 
@@ -84,7 +71,7 @@ void ProductCodesSorter::BuildProductCodeListFromFile(std::wifstream & inputFile
 {
 	std::unordered_set<std::wstring> uniqueProductCodes;
 
-	std::setlocale(LC_ALL, "en_US.utf8");//TODO: Determine if this is correct. it seems to be needed for towupper to work correctly
+	std::setlocale(LC_ALL, "");// , "en_US.utf8");
 	
 	std::wstring line;
 
@@ -168,6 +155,7 @@ void ProductCodesSorter::SortProductCodesFromFile(const char * inputFileName, co
 	}
 
 	// Read file in UTF-8
+	//Reference: https://en.cppreference.com/w/cpp/locale/codecvt_mode
 	std::wifstream inputFileStream;
 	inputFileStream.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t, 0x10ffff, std::consume_header>));
 	inputFileStream.open(inputFileName, std::ios_base::binary | std::ios_base::in);

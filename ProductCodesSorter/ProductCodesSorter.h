@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <cwctype>
 #include <clocale>
+#include <iomanip>
 
 class ProductCodesSorter
 {
